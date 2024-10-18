@@ -27,6 +27,7 @@ namespace API2.Controllers
 
                 // Circuit Braker Patter simüle edelim. custom Exxception fırlatalım
 
+                throw new Exception("Hata");
                 
                 return Ok(plist);
             }

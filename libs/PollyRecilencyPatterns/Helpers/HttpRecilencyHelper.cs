@@ -67,6 +67,24 @@ namespace Polly.RecilenyPatterns.Helpers
                 });
         }
 
-  }
+        //public IAsyncPolicy<HttpResponseMessage> CreateCircuitBreakerPolicy(int errorCount, TimeSpan timeOfBreak)
+        //{
+        //    return HttpPolicyExtensions
+        //        .HandleTransientHttpError()
+        //        .Or<Exception>()
+        //        .CircuitBreakerAsync(errorCount, timeOfBreak,
+        //            onBreak: async (exception, duration) =>
+        //            {
+        //                logger.LogError($"Hizmet kesintiye kısmı "); // Daha detaylı loglama
+        //                await Task.Delay(duration); // timeOfBreak süresince bekle
+        //            },
+        //            onReset: () =>
+        //            {
+        //                logger.LogInformation("Hizmete devam et. Burada timeOfBreak kadar beklendi sonra hizmet kesintisi" +
+        //                "bitti. Circuit Braker açık konuma geçti. Taki bir daha hata olana kadar açık kalacak");
+        //            });
+        //}
+
+    }
 
 }
