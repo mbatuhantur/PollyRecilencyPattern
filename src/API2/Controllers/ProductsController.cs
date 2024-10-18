@@ -14,18 +14,26 @@ namespace API2.Controllers
     [HttpGet]
     public async Task<IActionResult> GetProducts()
     {
-      //Timeout testi
-      Thread.Sleep(3500); //Main Thread kitlendi.
+            //Timeout testi
+            //Thread.Sleep(3500); //Main Thread kitlendi.
+            try
+            {
+                //await Task.Delay(3500);
+                var plist = new List<ProductDto>
+                {
+                   new ProductDto("P-1", 10, 12m),
+                   new ProductDto("P-2", 10, 13m)
+                };
 
-      var plist = new List<ProductDto>();
-      plist.Add(new ProductDto("P-1", 10, 12));
-      plist.Add(new ProductDto("P-2", 10, 13));
+                // Circuit Braker Patter simüle edelim. custom Exxception fırlatalım
 
-     // Circuit Braker Patter simüle edelim. custom Exxception fırlatalım
-
-     throw new Exception("Hata");
-
-      return Ok(plist);
+                
+                return Ok(plist);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,ex.Message);
+            }
     }
 
   }

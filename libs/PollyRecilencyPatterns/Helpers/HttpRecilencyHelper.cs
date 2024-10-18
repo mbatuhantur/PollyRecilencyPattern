@@ -57,7 +57,7 @@ namespace Polly.RecilenyPatterns.Helpers
                 .CircuitBreakerAsync(errorCount, timeOfBreak, 
                 onBreak: async (exception, duration) =>
                 {
-                    logger.LogInformation($"Hizmey kesinti kısmı {exception.Exception.Message}");
+                    logger.LogInformation($"Hizmet kesinti kısmı");
                     await Task.CompletedTask;
 
                 }, onReset: () =>
