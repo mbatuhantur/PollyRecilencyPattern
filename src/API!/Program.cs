@@ -1,4 +1,5 @@
-using Polly.RecilencyPatterns.Helpers;
+Ôªøusing Microsoft.Extensions.Logging;
+using Polly.RecilenyPatterns.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,21 +10,31 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// API1 API2 ye recilency patternler ¸zerinden request atacak
 
-builder.Services.AddHttpClient("api2", config =>
-{
-    config.BaseAddress = new Uri("https://localhost:5004");
-    //D˝˛ servisler ile Áal˝˛˝rken haberle˛me yˆntemimiz bu olmal˝,
-    ////Mesaj kuyruk sistemleri ile haberle˛me sadece Internel olarak mant˝kl˝
-    /// Genel olarak https://localhost:5005 URI ise APIGetway URI. www.a.com
-    /*
-     * Mesaj Kuyruk sistemi ¸zerinden RequesstClient ile haabele˛menin avantajlar˝
-     * 1. Protocol veya Port bilgisinden izole oluyoruz
-     * 2. Dinamik olarak IP port dei˛imi gibi durumlardan izoleyiz
-     * 3. Hata yˆnetimi veyaRecilency gibi kavramlar˝ MassTransit gibi paketlere b˝rak˝yoruz
-     */
-}).AddPolicyHandler(HttpRecilencyHelper.CreateRetryPolicy(retryCount:3, sleepDuration:TimeSpan.FromSeconds(30)));
+// API1 API2 recilency patternler √ºzerinde Request yapacak.
+using var loggerFactory = LoggerFactory.Create(loggingBuilder => loggingBuilder
+    .SetMinimumLevel(LogLevel.Trace)
+    .AddConsole());
+
+ILogger<HttpRecilencyHelper> logger = loggerFactory.CreateLogger<HttpRecilencyHelper>();
+
+var recilency = new HttpRecilencyHelper(logger);
+
+builder.Services
+  .AddHttpClient("api2", config =>
+  {
+      config.BaseAddress = new Uri("http://localhost:5004"); 
+      // servisler ile √ßal√Ω√æ√Ωrken haberle√æme y√∂netmimiz bu olmalƒ±. Mesaj Kuyruk sistemleri ile haberle√æme sadece Internal olarak mant√Ωkl√Ω.
+      // Genel olarak https://localhost:5005 URI ise APIGatewey URI. www.a.com.
+
+      // Mesaj Kuyruk sistemi √ºzerinden RequestClient ile haberle√æmenin avantajlar√Ω
+      // 1- Protocol veya Port bilgisinden izole oluyoruz.
+      // 2- Dinamik olarak IP port de√∞i√æimi gibi durumlardan izoleyiz.
+      // 3- Hata y√∂netimi veya Recilency gibi kavramlar√Ω MassTransit gibi paketlere b√Ωrak√Ωyoruz
+
+  }).AddPolicyHandler(recilency.CreateRetryPolicy(retryCount: 3, sleepDuration: TimeSpan.FromSeconds(2)))
+  .AddPolicyHandler(recilency.CreateTimeoutPolicy(timeout:TimeSpan.FromSeconds(3)));
+  ;
 
 
 
