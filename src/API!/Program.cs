@@ -33,8 +33,12 @@ builder.Services
       // 3- Hata yönetimi veya Recilency gibi kavramlarý MassTransit gibi paketlere býrakýyoruz
 
   }).AddPolicyHandler(recilency.CreateRetryPolicy(retryCount: 3, sleepDuration: TimeSpan.FromSeconds(2)))
-  .AddPolicyHandler(recilency.CreateTimeoutPolicy(timeout:TimeSpan.FromSeconds(3)));
+  .AddPolicyHandler(recilency.CreateTimeoutPolicy(timeout:TimeSpan.FromSeconds(3)))
+  .AddPolicyHandler(recilency.CreateCirciutBrakerPolicy(errorCount:3,timeOfBreak: TimeSpan.FromMinutes(3)))
   ;
+
+//Not: 3 kez arka arkaya http request işlemlerinde hata meydana gelirse 3 saniye api hizmetine ait
+//endpoint tetiklenmesin. API request overload olmasını eengeller.
 
 
 

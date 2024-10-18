@@ -49,7 +49,23 @@ namespace Polly.RecilenyPatterns.Helpers
             });
         }
 
+        public IAsyncPolicy<HttpResponseMessage> CreateCirciutBrakerPolicy(int errorCount, TimeSpan timeOfBreak)
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError(). // 5xx hata kodları ve 408 hata kodu için
+                Or<Exception>() // kendi e
+                .CircuitBreakerAsync(errorCount, timeOfBreak, 
+                onBreak: async (exception, duration) =>
+                {
+                    logger.LogInformation($"Hizmey kesinti kısmı {exception.Exception.Message}");
+                    await Task.CompletedTask;
 
+                }, onReset: () =>
+                {
+                    logger.LogInformation("Hizmete devam et. Burada timeOfBreak kadar beklendi sonra hizmet kesintisi" +
+                        "bitti. Circuit Braker açık konuma geçti. Taki bir daha hata olana kadar açık kalacak");
+                });
+        }
 
   }
 
